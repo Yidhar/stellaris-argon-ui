@@ -1,0 +1,11 @@
+{
+  "schema": 2,
+  "id": "stellaris-argon-ui",
+  "name": "Argon UI",
+  "version": "0.1.0",
+  "description": "A component library for stellaris-guiexpand: cards, rings, radar and area charts, tabs, a HUD capsule and more, which a mod uses from its declaration files without writing a DLL.",
+  "dll": "stellaris_argon_ui.dll",
+  "load": { "wait": "window", "delay_ms": 1500 },
+  "update": { "github": "Yidhar/stellaris-argon-ui", "asset": "stellaris-argon-ui-v*.zip" },
+  "homepage": "https://github.com/Yidhar/stellaris-argon-ui"
+}

@@ -1,0 +1,103 @@
+name: Build and release
+
+# Every push to main and every pull request builds stellaris_argon_ui.dll, checks the plugin folder against the launcher's plugin spec and keeps the
+# packaged zips as workflow artifacts. Pushing a tag v<version> (the version of plugin/stl-plugin.json, for example v0.1.0) also publishes a GitHub Release
+# with the zips and their SHA-256 files.
+#   stellaris-argon-ui-v<version>.zip          the plugin folder (what players install)
+#   stellaris-argon-ui-samples-v<version>.zip  the example mods, the documentation and the interface headers
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write  # creating the release
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check the Python scripts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $files = Get-ChildItem -Recurse -Filter *.py tools | ForEach-Object FullName
+          python -m py_compile @files
+          if ($LASTEXITCODE -ne 0) { throw "py_compile failed" }
+
+      - name: Check the plugin manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ($env:GITHUB_REF_TYPE -eq "tag") { python tools/check_plugin.py --tag $env:GITHUB_REF_NAME } else { python tools/check_plugin.py }
+          if ($LASTEXITCODE -ne 0) { throw "check_plugin failed" }
+
+      # MSVC x64; Dear ImGui 1.85 comes from FetchContent
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Package
+        id: package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $ver = if ($env:GITHUB_REF_TYPE -eq "tag") { $env:GITHUB_REF_NAME } else { "dev-$($env:GITHUB_SHA.Substring(0, 7))" }
+
+          # --- stellaris-argon-ui: the plugin. The zip IS the plugin folder (no top folder).
+          $plugin = "stellaris-argon-ui-$ver"
+          $dir = "package/stellaris-argon-ui"
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          Copy-Item build/Release/stellaris_argon_ui.dll $dir/
+          Copy-Item plugin/stl-plugin.json $dir/
+          Copy-Item README.md, README.zh-CN.md, LICENSE $dir/
+          if ($env:GITHUB_REF_TYPE -eq "tag") { python tools/check_plugin.py --dir $dir --release --tag $env:GITHUB_REF_NAME } else { python tools/check_plugin.py --dir $dir --release }
+          if ($LASTEXITCODE -ne 0) { throw "the plugin folder does not pass check_plugin" }
+          Compress-Archive -Path "$dir/*" -DestinationPath "package/$plugin.zip"
+
+          # --- samples: the example mods and the documentation (not a plugin)
+          $samples = "stellaris-argon-ui-samples-$ver"
+          $out = "package/$samples"
+          New-Item -ItemType Directory -Force -Path "$out/docs/images" | Out-Null
+          Copy-Item examples "$out/examples" -Recurse
+          New-Item -ItemType Directory -Force -Path "$out/tools" | Out-Null
+          Copy-Item tools/mod_install.py "$out/tools/"
+          Copy-Item docs/components.md, docs/components.zh-CN.md "$out/docs/"
+          Copy-Item docs/images/* "$out/docs/images/"
+          Copy-Item README.md, README.zh-CN.md, LICENSE $out/
+          Compress-Archive -Path $out -DestinationPath "package/$samples.zip"
+
+          # <zip>.sha256: the hex digest first, then the file name (the launcher checks the download against it)
+          foreach ($n in $plugin, $samples) {
+            $hash = (Get-FileHash "package/$n.zip" -Algorithm SHA256).Hash.ToLower()
+            "$hash  $n.zip" | Set-Content -Encoding ascii "package/$n.zip.sha256"
+          }
+          "version=$ver" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stellaris-argon-ui-${{ steps.package.outputs.version }}
+          path: package/*.zip*
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: package/*.zip*
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            A component library for [stellaris-guiexpand](https://github.com/Yidhar/stellaris-guiexpand): it needs that plugin (a version with elements and HUD panels) and the Stellaris launcher.
+            It uses only the host's public interface, so it does not depend on the game build.
+
+            - `stellaris-argon-ui-v*.zip`: the plugin, laid out as its plugin folder (`stl-plugin.json`, `stellaris_argon_ui.dll`). Unpack it into `Documents\Paradox Interactive\Stellaris\plugins\stellaris-argon-ui\`, or install the unpacked folder with the Stellaris launcher.
+            - `stellaris-argon-ui-samples-v*.zip`: the example mods (the Command Deck and a panel of components), the component reference and `tools/mod_install.py`.
