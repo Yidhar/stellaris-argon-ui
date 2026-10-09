@@ -1,0 +1,258 @@
+# The window of the Command Deck: five pages (overview, economy, time, script effects, settings) on a rail of icons. A component library can build all of it
+# from declarations: the frame, the tabs, cards, rows of columns, rings, a radar, charts, a ledger, effect cards. Press ctrl+alt+g or the orb of the capsule.
+stl_gui_version = 1
+stl_gui_requires = { stellaris-argon-ui }
+
+panel = {
+    id     = deck
+    title  = ARGON_DECK_TITLE
+    kind   = hud                       # an undecorated window ...
+    movable = yes                      # ... that the player can drag
+    anchor = center
+    offset = { 0 -40 }
+    size   = { 1180 700 }
+    open   = no
+    hotkey = "ctrl+alt+g"
+
+    content = {
+        argon_window = {
+            kicker   = ARGON_DECK_KICKER
+            title    = ARGON_DECK_TITLE
+            subtitle = ARGON_DECK_SUB
+            close    = "argon_command_deck:deck"
+        }
+        argon_tabs = {
+            # ------------------------------------------------------------------------------------------------------------------------------ overview
+            tab = {
+                icon = overview
+                title = ARGON_DECK_T_OVERVIEW
+                subtitle = ARGON_DECK_S_OVERVIEW
+                content = {
+                    argon_row = {
+                        gap = 16
+                        height = 132
+                        col = {
+                            width = 0.46
+                            content = {
+                                argon_card = {
+                                    kicker  = ARGON_DECK_EMPIRE_K
+                                    height  = fill
+                                    glow    = yes
+                                    content = {
+                                        argon_heading = { text = ARGON_DECK_NAME }
+                                        date = { label = ARGON_DECK_DATE }
+                                    }
+                                }
+                            }
+                        }
+                        col = { content = { argon_stat_tile = { label = ARGON_DECK_COLONIES  stat = colonies         accent = 0    height = fill } } }
+                        col = { content = { argon_stat_tile = { label = ARGON_DECK_POPS      stat = pops             accent = 0.35 height = fill } } }
+                        col = { content = { argon_stat_tile = { label = ARGON_DECK_MIL       stat = military_power   accent = 0.7  height = fill } } }
+                        col = { content = { argon_stat_tile = { label = ARGON_DECK_SIZE      stat = empire_size      accent = 1    height = fill } } }
+                    }
+                    argon_gap = { height = 16 }
+                    argon_row = {
+                        gap = 16
+                        height = fill
+                        col = {
+                            width = 0.36
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_STANDING_K
+                                    title  = ARGON_DECK_STANDING
+                                    height = fill
+                                    content = {
+                                        argon_radar = {
+                                            size = 270
+                                            label_military = ARGON_DECK_L_MIL
+                                            label_tech = ARGON_DECK_L_TECH
+                                            label_economy = ARGON_DECK_L_ECO
+                                            label_territory = ARGON_DECK_L_TERR
+                                            label_population = ARGON_DECK_L_POP
+                                            note = ARGON_DECK_NOTE
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        col = {
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_STOCK_K
+                                    title  = ARGON_DECK_STOCK
+                                    accent = 1
+                                    height = fill
+                                    content = {
+                                        argon_row = {
+                                            gap = 8
+                                            col = { content = { argon_ring = { resource = energy          size = 92 } } }
+                                            col = { content = { argon_ring = { resource = minerals        size = 92 } } }
+                                            col = { content = { argon_ring = { resource = food            size = 92 } } }
+                                        }
+                                        argon_row = {
+                                            gap = 8
+                                            col = { content = { argon_ring = { resource = consumer_goods  size = 92 } } }
+                                            col = { content = { argon_ring = { resource = alloys          size = 92 } } }
+                                            col = { content = { argon_ring = { resource = influence       size = 92 } } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            # ------------------------------------------------------------------------------------------------------------------------------ economy
+            tab = {
+                icon = economy
+                title = ARGON_DECK_T_ECONOMY
+                subtitle = ARGON_DECK_S_ECONOMY
+                content = {
+                    argon_row = {
+                        gap = 16
+                        height = fill
+                        col = {
+                            width = 380
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_LEDGER_K
+                                    title  = ARGON_DECK_LEDGER
+                                    height = fill
+                                    padding = 10
+                                    content = { argon_ledger = { id = deck } }
+                                }
+                            }
+                        }
+                        col = {
+                            content = {
+                                argon_resource_detail = {
+                                    id = deck
+                                    height = fill
+                                    kicker_chart = ARGON_DECK_CHART_K
+                                    kicker_net = ARGON_DECK_NET_K
+                                    label_income = ARGON_DECK_L_INCOME
+                                    label_expense = ARGON_DECK_L_EXPENSE
+                                    label_net = ARGON_DECK_L_NET
+                                    label_cap = ARGON_DECK_L_CAP
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            # ------------------------------------------------------------------------------------------------------------------------------ time
+            tab = {
+                icon = time
+                title = ARGON_DECK_T_TIME
+                subtitle = ARGON_DECK_S_TIME
+                content = {
+                    argon_row = {
+                        gap = 16
+                        height = fill
+                        col = {
+                            width = 0.5
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_CHRONO_K
+                                    title  = ARGON_DECK_CHRONO
+                                    height = fill
+                                    content = { argon_speed_dial = { size = 230  label_paused = ARGON_DECK_PAUSED  label_running = ARGON_DECK_RUNNING } }
+                                }
+                            }
+                        }
+                        col = {
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_CAL_K
+                                    title  = ARGON_DECK_CAL
+                                    accent = 1
+                                    height = fill
+                                    content = {
+                                        argon_calendar = { label_month = ARGON_DECK_L_MONTH  label_day = ARGON_DECK_L_DAY }
+                                        argon_spark = { series = "@frame_ms"   caption = ARGON_DECK_FRAME   unit = ms      max = 40 }
+                                        argon_gap = { height = 14 }
+                                        argon_spark = { series = "@tick_rate"  caption = ARGON_DECK_TICKS   unit = "tick/s" max = 120  color = accent2 }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            # ------------------------------------------------------------------------------------------------------------------------------ script
+            tab = {
+                icon = script
+                title = ARGON_DECK_T_SCRIPT
+                subtitle = ARGON_DECK_S_SCRIPT
+                content = {
+                    argon_row = {
+                        gap = 16
+                        col = { content = { argon_effect_card = { effect = guiexpand_test_grant_energy  title = ARGON_DECK_FX_GRANT_T  desc = ARGON_DECK_FX_GRANT_D  chip_ready = ARGON_DECK_CHIP_READY  chip_refused = ARGON_DECK_CHIP_REFUSED  run = ARGON_DECK_RUN } } }
+                        col = { content = { argon_effect_card = { effect = guiexpand_test_set_mark     title = ARGON_DECK_FX_SET_T    desc = ARGON_DECK_FX_SET_D    chip_ready = ARGON_DECK_CHIP_READY  chip_refused = ARGON_DECK_CHIP_REFUSED  run = ARGON_DECK_RUN } } }
+                    }
+                    argon_gap = { height = 16 }
+                    argon_row = {
+                        gap = 16
+                        col = { content = { argon_effect_card = { effect = guiexpand_test_clear_mark   title = ARGON_DECK_FX_CLEAR_T  desc = ARGON_DECK_FX_CLEAR_D  chip_ready = ARGON_DECK_CHIP_READY  chip_refused = ARGON_DECK_CHIP_REFUSED  run = ARGON_DECK_RUN } } }
+                        col = { content = { argon_effect_card = { effect = guiexpand_test_rich_only    title = ARGON_DECK_FX_RICH_T   desc = ARGON_DECK_FX_RICH_D   chip_ready = ARGON_DECK_CHIP_READY  chip_refused = ARGON_DECK_CHIP_REFUSED  run = ARGON_DECK_RUN } } }
+                    }
+                    argon_gap = { height = 16 }
+                    argon_card = {
+                        kicker = ARGON_DECK_LOG_K
+                        title  = ARGON_DECK_LOG
+                        accent = 1
+                        height = fill
+                        content = {
+                            text = { text = ARGON_DECK_FLOW }
+                            argon_gap = { height = 8 }
+                            argon_effect_log = { empty = ARGON_DECK_LOG_EMPTY  queued = ARGON_DECK_LOG_QUEUED  done = ARGON_DECK_LOG_DONE  limit = 5 }
+                        }
+                    }
+                }
+            }
+            # ------------------------------------------------------------------------------------------------------------------------------ settings
+            tab = {
+                icon = settings
+                title = ARGON_DECK_T_SETTINGS
+                subtitle = ARGON_DECK_S_SETTINGS
+                content = {
+                    argon_row = {
+                        gap = 16
+                        height = fill
+                        col = {
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_APPEAR_K
+                                    title  = ARGON_DECK_APPEAR
+                                    height = fill
+                                    content = {
+                                        argon_theme_picker = { }
+                                        argon_switch = { label = ARGON_DECK_SW_STARS  state = stars }
+                                        argon_switch = { label = ARGON_DECK_SW_HUD    panel = "argon_command_deck:hud" }
+                                    }
+                                }
+                            }
+                        }
+                        col = {
+                            content = {
+                                argon_card = {
+                                    kicker = ARGON_DECK_RUNTIME_K
+                                    title  = ARGON_DECK_RUNTIME
+                                    accent = 1
+                                    height = fill
+                                    content = {
+                                        argon_info = { item = imgui    label = ARGON_DECK_I_IMGUI }
+                                        argon_info = { item = context  label = ARGON_DECK_I_CTX }
+                                        argon_info = { item = display  label = ARGON_DECK_I_DISPLAY }
+                                        argon_info = { item = draw     label = ARGON_DECK_I_DRAW }
+                                        argon_info = { item = host     label = ARGON_DECK_I_HOST }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

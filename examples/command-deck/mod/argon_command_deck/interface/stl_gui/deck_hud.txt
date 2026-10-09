@@ -1,0 +1,28 @@
+# The capsule of the Command Deck: a HUD at the bottom of the screen with the date, the game speed and five resources. The orb opens the deck window
+# (deck_window.txt). Everything here is a component of stellaris-argon-ui; nothing is drawn by this mod's code, because it has none.
+stl_gui_version = 1
+stl_gui_requires = { stellaris-argon-ui }
+
+panel = {
+    id     = hud
+    title  = ARGON_DECK_HUD
+    kind   = hud
+    anchor = bottom_center
+    offset = { 0 24 }
+    size   = { 1110 68 }
+
+    content = {
+        argon_pill = { }
+        row = {
+            argon_orb   = { toggle = "argon_command_deck:deck" }
+            argon_date  = { label = ARGON_DECK_STELLAR_DATE  empty = ARGON_DECK_NO_GAME  width = 168 }
+            argon_speed = { }
+            argon_vline = { }
+            argon_chip  = { resource = energy    width = 110 }
+            argon_chip  = { resource = minerals  width = 110 }
+            argon_chip  = { resource = food      width = 110 }
+            argon_chip  = { resource = alloys    width = 110 }
+            argon_chip  = { resource = influence width = 110 }
+        }
+    }
+}

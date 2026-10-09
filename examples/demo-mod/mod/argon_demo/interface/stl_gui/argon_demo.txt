@@ -1,0 +1,79 @@
+# A panel that uses the components of stellaris-argon-ui (docs/components.md). Without the plugin every argon_ entry shows a dim note that names it.
+stl_gui_version = 1
+stl_gui_requires = { stellaris-argon-ui }
+
+panel = {
+    id    = components
+    title = ARGON_DEMO_TITLE
+    size  = { 880 690 }
+
+    content = {
+        argon_row = {                                   # columns: widths are fractions of the line (or pixels); a column without one takes what is left
+            gap = 16
+            height = 104
+            col = {
+                width = 0.42
+                content = {
+                    argon_card = {
+                        kicker = ARGON_DEMO_EMPIRE_K
+                        title  = ARGON_DEMO_EMPIRE
+                        height = fill                   # as tall as the row
+                        content = {
+                            text  = { text = ARGON_DEMO_NAME }          # [Root.GetName]: the engine evaluates it for the player's country
+                            date  = { label = ARGON_DEMO_DATE }
+                        }
+                    }
+                }
+            }
+            col = { content = { argon_stat_tile = { label = ARGON_DEMO_COLONIES  stat = colonies        accent = 0    height = fill } } }
+            col = { content = { argon_stat_tile = { label = ARGON_DEMO_POPS      stat = pops            accent = 0.35 height = fill } } }
+            col = { content = { argon_stat_tile = { label = ARGON_DEMO_MIL       stat = military_power  accent = 0.7  height = fill } } }
+        }
+        spacer = 12
+        argon_row = {
+            gap = 16
+            height = 352
+            col = {
+                width = 0.36
+                content = {
+                    argon_card = {
+                        kicker = ARGON_DEMO_STANDING_K
+                        title  = ARGON_DEMO_STANDING
+                        height = fill
+                        content = { argon_radar = { size = 160  note = ARGON_DEMO_NOTE } }
+                    }
+                }
+            }
+            col = {
+                content = {
+                    argon_card = {
+                        kicker = ARGON_DEMO_STOCK_K
+                        title  = ARGON_DEMO_STOCK
+                        accent = 1
+                        height = fill
+                        content = {
+                            argon_row = {
+                                gap = 8
+                                col = { content = { argon_ring = { resource = energy    label = ARGON_DEMO_ENERGY    size = 76 } } }
+                                col = { content = { argon_ring = { resource = minerals  label = ARGON_DEMO_MINERALS  size = 76 } } }
+                                col = { content = { argon_ring = { resource = food      label = ARGON_DEMO_FOOD      size = 76 } } }
+                            }
+                            argon_row = {
+                                gap = 8
+                                col = { content = { argon_ring = { resource = alloys     label = ARGON_DEMO_ALLOYS     size = 76 } } }
+                                col = { content = { argon_ring = { resource = influence  label = ARGON_DEMO_INFLUENCE  size = 76 } } }
+                                col = { content = { argon_ring = { resource = unity      label = ARGON_DEMO_UNITY      size = 76 } } }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        spacer = 12
+        argon_card = {
+            kicker = ARGON_DEMO_HISTORY_K
+            title  = ARGON_DEMO_HISTORY
+            content = { argon_chart = { series = energy  height = 110  caption = ARGON_DEMO_HISTORY_CAP } }
+        }
+    }
+}
