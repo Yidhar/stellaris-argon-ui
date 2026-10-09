@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-09)
 
 First version. A plugin for stellaris-guiexpand that registers 27 components as elements, for the declaration files of mods.
 
